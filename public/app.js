@@ -10951,12 +10951,24 @@ var App = function (_Component) {
         user: "Vincent",
         replies: []
       }],
+
       inputValue: "",
       currentUser: "Matt",
-      role: "loginUser"
+      // role: "loginUser",
+
+      // reply related states
+      replied: false,
+      replyMessage: "",
+      clickedCommentId: ""
     };
+    // comments
     _this.handleChange = _this.handleChange.bind(_this);
     _this.handleSubmit = _this.handleSubmit.bind(_this);
+
+    // replies
+    _this.handleReply = _this.handleReply.bind(_this);
+    _this.handleReplyChange = _this.handleReplyChange.bind(_this);
+    _this.handleReplySubmit = _this.handleReplySubmit.bind(_this);
     return _this;
   }
 
@@ -10965,6 +10977,25 @@ var App = function (_Component) {
     value: function componentDidMount() {
       // popup alert to select user
       this.loadComments();
+    }
+  }, {
+    key: "loadComments",
+    value: function loadComments() {
+      var _this2 = this;
+
+      _jquery2.default.ajax({
+        method: "GET",
+        url: "/comment",
+        success: function success(data) {
+          console.log("AJAX success", data);
+          _this2.setState({
+            comments: data
+          });
+        },
+        error: function error(err) {
+          console.log("AJAX failed", err);
+        }
+      });
     }
   }, {
     key: "handleChange",
@@ -10976,7 +11007,7 @@ var App = function (_Component) {
   }, {
     key: "handleSubmit",
     value: function handleSubmit() {
-      var _this2 = this;
+      var _this3 = this;
 
       event.preventDefault();
       _jquery2.default.ajax({
@@ -10985,7 +11016,7 @@ var App = function (_Component) {
         data: { comment: this.state.inputValue, user: this.state.currentUser },
         success: function success(data) {
           console.log("AJAX success", data);
-          _this2.loadComments();
+          _this3.loadComments();
           event.preventDefault();
         },
         error: function error(err) {
@@ -10994,21 +11025,53 @@ var App = function (_Component) {
       });
     }
   }, {
-    key: "loadComments",
-    value: function loadComments() {
-      var _this3 = this;
+    key: "handleReply",
+    value: function handleReply(e) {
+      event.preventDefault();
+      // This might not be needed
+      // console.log("handleReply>>> ", this.props);
+      var clickedCommentId = e.target.parentNode.className.substring(8);
+      this.setState({
+        replied: !this.state.replied,
+        clickedCommentId: clickedCommentId
+      });
+    }
+  }, {
+    key: "handleReplyChange",
+    value: function handleReplyChange(e) {
+      this.setState({
+        replyMessage: e.target.value
+      });
+    }
+  }, {
+    key: "handleReplySubmit",
+    value: function handleReplySubmit(e) {
+      var _this4 = this;
 
+      // ajax to db
+      // get comment ID
+      // push to reply array
+      event.preventDefault();
+      // console.log("handleReplySubmit>>> ", this.props);
+      console.log("submitted reply for comment " + this.state.clickedCommentId);
+      event.preventDefault();
       _jquery2.default.ajax({
-        method: "GET",
-        url: "/comment",
+        method: "POST",
+        url: "/reply",
+        data: {
+          commentId: this.state.clickedCommentId,
+          reply: this.state.replyMessage,
+          user: this.state.currentUser
+        },
         success: function success(data) {
-          console.log("AJAX success", data);
-          _this3.setState({
-            comments: data
+          console.log("AJAX REPLY success", data);
+          _this4.setState({
+            replied: !_this4.state.replied
           });
+          _this4.loadComments();
         },
         error: function error(err) {
-          console.log("AJAX failed", err);
+          console.log("AJAX REPLY failed", err);
         }
       });
     }
@@ -11038,7 +11101,13 @@ var App = function (_Component) {
         ),
         _react2.default.createElement(_commentGroup2.default, {
           comments: this.state.comments,
-          currentUser: this.state.currentUser
+          currentUser: this.state.currentUser,
+          replied: this.state.replied,
+          replyMessage: this.state.replyMessage,
+          clickedCommentId: this.state.clickedCommentId,
+          handleReply: this.handleReply,
+          handleReplyChange: this.handleReplyChange,
+          handleReplySubmit: this.handleReplySubmit
         })
       );
     }
@@ -34618,13 +34687,23 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //   ],
 
 var CommentGroup = function CommentGroup(props) {
-  var comments = props.comments;
-  var currentUser = props.currentUser;
-  var formatComments = comments.map(function (element, index) {
+  // const comments = props.comments;
+  // const currentUser = props.currentUser;
+  console.log("props in comment group", props);
+  var formatComments = props.comments.map(function (element, index) {
     return _react2.default.createElement(
       "li",
       { key: index, className: "list-group-item" },
-      _react2.default.createElement(_comment2.default, { comment: element, currentUser: currentUser })
+      _react2.default.createElement(_comment2.default, {
+        comment: element,
+        currentUser: props.currentUser,
+        handleReply: props.handleReply,
+        handleReplyChange: props.handleReplyChange,
+        handleReplySubmit: props.handleReplySubmit,
+        replied: props.replied,
+        replyMessage: props.replyMessage,
+        clickedCommentId: props.clickedCommentId
+      })
     );
   });
   // console.log(formatComments);
@@ -34685,73 +34764,68 @@ var Comment = function (_Component) {
   function Comment(props) {
     _classCallCheck(this, Comment);
 
+    // this.state = {
+    //   replied: false,
+    //   replyMessage: "",
+    //   clickedCommentId: ""
+    // };
     var _this = _possibleConstructorReturn(this, (Comment.__proto__ || Object.getPrototypeOf(Comment)).call(this, props));
 
-    _this.state = {
-      replied: false,
-      replyMessage: "",
-      clickedCommentId: ""
-    };
     console.log("props in comments", _this.props);
-    _this.handleReply = _this.handleReply.bind(_this);
-    _this.handleReplyChange = _this.handleReplyChange.bind(_this);
-    _this.handleReplySubmit = _this.handleReplySubmit.bind(_this);
+    // this.handleReply = this.handleReply.bind(this);
+    // this.handleReplyChange = this.handleReplyChange.bind(this);
+    // this.handleReplySubmit = this.handleReplySubmit.bind(this);
     return _this;
   }
 
-  _createClass(Comment, [{
-    key: "handleReply",
-    value: function handleReply(e) {
-      event.preventDefault();
-      // This might not be needed
-      var clickedCommentId = e.target.parentNode.className.substring(8);
-      this.setState({
-        replied: true,
-        clickedCommentId: clickedCommentId
-      });
-    }
-  }, {
-    key: "handleReplyChange",
-    value: function handleReplyChange(e) {
-      this.setState({
-        replyMessage: e.target.value
-      });
-    }
-  }, {
-    key: "handleReplySubmit",
-    value: function handleReplySubmit(e) {
-      var _this2 = this;
+  // handleReply(e) {
+  //   event.preventDefault();
+  //   // This might not be needed
+  //   const clickedCommentId = e.target.parentNode.className.substring(8);
+  //   this.setState({
+  //     replied: true,
+  //     clickedCommentId: clickedCommentId
+  //   });
+  // }
 
-      // ajax to db
-      // get comment ID
-      // push to reply array
-      event.preventDefault();
-      console.log(this.props);
-      console.log("submitted reply for comment " + this.props.comment.commentId);
-      event.preventDefault();
-      _jquery2.default.ajax({
-        method: "POST",
-        url: "/reply",
-        data: {
-          commentId: this.props.comment.commentId,
-          reply: this.state.replyMessage,
-          user: this.props.currentUser
-        },
-        success: function success(data) {
-          console.log("AJAX REPLY success", data);
-          _this2.setState({
-            replied: false
-          });
-        },
-        error: function error(err) {
-          console.log("AJAX REPLY failed", err);
-        }
-      });
-    }
-  }, {
+  // handleReplyChange(e) {
+  //   this.setState({
+  //     replyMessage: e.target.value
+  //   });
+  // }
+
+  // handleReplySubmit(e) {
+  //   // ajax to db
+  //   // get comment ID
+  //   // push to reply array
+  //   event.preventDefault();
+  //   console.log(this.props);
+  //   console.log(`submitted reply for comment ${this.props.comment.commentId}`);
+  //   event.preventDefault();
+  //   $.ajax({
+  //     method: "POST",
+  //     url: "/reply",
+  //     data: {
+  //       commentId: this.props.comment.commentId,
+  //       reply: this.state.replyMessage,
+  //       user: this.props.currentUser
+  //     },
+  //     success: data => {
+  //       console.log("AJAX REPLY success", data);
+  //       this.setState({
+  //         replied: false
+  //       });
+  //     },
+  //     error: err => {
+  //       console.log("AJAX REPLY failed", err);
+  //     }
+  //   });
+  // }
+
+  _createClass(Comment, [{
     key: "render",
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
       var comments = this.props.comment;
       var showReplyBox = void 0;
@@ -34764,23 +34838,23 @@ var Comment = function (_Component) {
           commentId: reply.commentId,
           reply: reply.reply,
           user: reply.user,
-          replyId: index // update to uuid? 
-          , currentUser: _this3.props.currentUser
+          replyId: index // update to uuid?
+          , currentUser: _this2.props.currentUser
         });
       });
 
-      if (this.state.replied === true) {
+      if (this.props.replied === true && JSON.stringify(comments.commentId) === this.props.clickedCommentId) {
         showReplyBox = _react2.default.createElement(
           "div",
           null,
           _react2.default.createElement("textarea", {
             className: "replyBox",
-            value: this.state.inputValue,
-            onChange: this.handleReplyChange
+            value: this.props.inputValue,
+            onChange: this.props.handleReplyChange
           }),
           _react2.default.createElement(
             "button",
-            { onClick: this.handleReplySubmit },
+            { onClick: this.props.handleReplySubmit },
             "Submit"
           )
         );
@@ -34803,7 +34877,10 @@ var Comment = function (_Component) {
         ),
         _react2.default.createElement(
           "button",
-          { onClick: this.handleReply },
+          {
+            onClick: this.props.handleReply,
+            id: this.props.clickedCommentId
+          },
           "Reply"
         ),
         showReplyBox,

@@ -12,60 +12,60 @@ import $ from "jquery";
 class Comment extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      replied: false,
-      replyMessage: "",
-      clickedCommentId: ""
-    };
+    // this.state = {
+    //   replied: false,
+    //   replyMessage: "",
+    //   clickedCommentId: ""
+    // };
     console.log("props in comments", this.props);
-    this.handleReply = this.handleReply.bind(this);
-    this.handleReplyChange = this.handleReplyChange.bind(this);
-    this.handleReplySubmit = this.handleReplySubmit.bind(this);
+    // this.handleReply = this.handleReply.bind(this);
+    // this.handleReplyChange = this.handleReplyChange.bind(this);
+    // this.handleReplySubmit = this.handleReplySubmit.bind(this);
   }
 
-  handleReply(e) {
-    event.preventDefault();
-    // This might not be needed
-    const clickedCommentId = e.target.parentNode.className.substring(8);
-    this.setState({
-      replied: true,
-      clickedCommentId: clickedCommentId
-    });
-  }
+  // handleReply(e) {
+  //   event.preventDefault();
+  //   // This might not be needed
+  //   const clickedCommentId = e.target.parentNode.className.substring(8);
+  //   this.setState({
+  //     replied: true,
+  //     clickedCommentId: clickedCommentId
+  //   });
+  // }
 
-  handleReplyChange(e) {
-    this.setState({
-      replyMessage: e.target.value
-    });
-  }
+  // handleReplyChange(e) {
+  //   this.setState({
+  //     replyMessage: e.target.value
+  //   });
+  // }
 
-  handleReplySubmit(e) {
-    // ajax to db
-    // get comment ID
-    // push to reply array
-    event.preventDefault();
-    console.log(this.props);
-    console.log(`submitted reply for comment ${this.props.comment.commentId}`);
-    event.preventDefault();
-    $.ajax({
-      method: "POST",
-      url: "/reply",
-      data: {
-        commentId: this.props.comment.commentId,
-        reply: this.state.replyMessage,
-        user: this.props.currentUser
-      },
-      success: data => {
-        console.log("AJAX REPLY success", data);
-        this.setState({
-          replied: false
-        });
-      },
-      error: err => {
-        console.log("AJAX REPLY failed", err);
-      }
-    });
-  }
+  // handleReplySubmit(e) {
+  //   // ajax to db
+  //   // get comment ID
+  //   // push to reply array
+  //   event.preventDefault();
+  //   console.log(this.props);
+  //   console.log(`submitted reply for comment ${this.props.comment.commentId}`);
+  //   event.preventDefault();
+  //   $.ajax({
+  //     method: "POST",
+  //     url: "/reply",
+  //     data: {
+  //       commentId: this.props.comment.commentId,
+  //       reply: this.state.replyMessage,
+  //       user: this.props.currentUser
+  //     },
+  //     success: data => {
+  //       console.log("AJAX REPLY success", data);
+  //       this.setState({
+  //         replied: false
+  //       });
+  //     },
+  //     error: err => {
+  //       console.log("AJAX REPLY failed", err);
+  //     }
+  //   });
+  // }
 
   render() {
     const comments = this.props.comment;
@@ -80,21 +80,24 @@ class Comment extends Component {
           commentId={reply.commentId}
           reply={reply.reply}
           user={reply.user}
-          replyId={index} // update to uuid? 
+          replyId={index} // update to uuid?
           currentUser={this.props.currentUser}
         />
       );
     });
 
-    if (this.state.replied === true) {
+    if (
+      this.props.replied === true &&
+      JSON.stringify(comments.commentId) === this.props.clickedCommentId
+    ) {
       showReplyBox = (
         <div>
           <textarea
             className="replyBox"
-            value={this.state.inputValue}
-            onChange={this.handleReplyChange}
+            value={this.props.inputValue}
+            onChange={this.props.handleReplyChange}
           />
-          <button onClick={this.handleReplySubmit}>Submit</button>
+          <button onClick={this.props.handleReplySubmit}>Submit</button>
         </div>
       );
     } else {
@@ -105,7 +108,12 @@ class Comment extends Component {
       <div className={`comment-${comments.commentId}`}>
         <div>{comments.comment}</div>
         <div>{comments.user}</div>
-        <button onClick={this.handleReply}>Reply</button>
+        <button
+          onClick={this.props.handleReply}
+          id={this.props.clickedCommentId}
+        >
+          Reply
+        </button>
         {showReplyBox}
         {replies}
       </div>

@@ -25,17 +25,45 @@ class App extends Component {
           replies: []
         }
       ],
+
       inputValue: "",
       currentUser: "Matt",
-      role: "loginUser"
+      // role: "loginUser",
+
+      // reply related states
+      replied: false,
+      replyMessage: "",
+      clickedCommentId: ""
     };
+    // comments
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+
+    // replies
+    this.handleReply = this.handleReply.bind(this);
+    this.handleReplyChange = this.handleReplyChange.bind(this);
+    this.handleReplySubmit = this.handleReplySubmit.bind(this);
   }
 
   componentDidMount() {
     // popup alert to select user
     this.loadComments();
+  }
+
+  loadComments() {
+    $.ajax({
+      method: "GET",
+      url: "/comment",
+      success: data => {
+        console.log("AJAX success", data);
+        this.setState({
+          comments: data
+        });
+      },
+      error: err => {
+        console.log("AJAX failed", err);
+      }
+    });
   }
 
   handleChange(e) {
@@ -61,18 +89,48 @@ class App extends Component {
     });
   }
 
-  loadComments() {
+  handleReply(e) {
+    event.preventDefault();
+    // This might not be needed
+    // console.log("handleReply>>> ", this.props);
+    const clickedCommentId = e.target.parentNode.className.substring(8);
+    this.setState({
+      replied: !this.state.replied,
+      clickedCommentId: clickedCommentId
+    });
+  }
+
+  handleReplyChange(e) {
+    this.setState({
+      replyMessage: e.target.value
+    });
+  }
+
+  handleReplySubmit(e) {
+    // ajax to db
+    // get comment ID
+    // push to reply array
+    event.preventDefault();
+    // console.log("handleReplySubmit>>> ", this.props);
+    console.log(`submitted reply for comment ${this.state.clickedCommentId}`);
+    event.preventDefault();
     $.ajax({
-      method: "GET",
-      url: "/comment",
+      method: "POST",
+      url: "/reply",
+      data: {
+        commentId: this.state.clickedCommentId,
+        reply: this.state.replyMessage,
+        user: this.state.currentUser
+      },
       success: data => {
-        console.log("AJAX success", data);
+        console.log("AJAX REPLY success", data);
         this.setState({
-          comments: data
+          replied: !this.state.replied
         });
+        this.loadComments();
       },
       error: err => {
-        console.log("AJAX failed", err);
+        console.log("AJAX REPLY failed", err);
       }
     });
   }
@@ -95,6 +153,12 @@ class App extends Component {
         <CommentGroup
           comments={this.state.comments}
           currentUser={this.state.currentUser}
+          replied={this.state.replied}
+          replyMessage={this.state.replyMessage}
+          clickedCommentId={this.state.clickedCommentId}
+          handleReply={this.handleReply}
+          handleReplyChange={this.handleReplyChange}
+          handleReplySubmit={this.handleReplySubmit}
         />
       </div>
     );
