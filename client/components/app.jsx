@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import CommentGroup from "./commentGroup.jsx";
-
-// import { Media } from 'react-bootstrap';
 import $ from "jquery";
 
 // {comments: 'first comment', user:'Dean', replies:{{comments: 'first reply', user:'Vincent', replies:{}}}}
@@ -12,16 +10,24 @@ class App extends Component {
     super(props);
     this.state = {
       comments: [
-        { commentId: 1, comment: "first comment", user: "Dean", replies: {} },
+        {
+          commentId: 1,
+          comment: "first comment",
+          user: "Dean",
+          replies: [
+            { commentId: 1, replyId: 1, reply: "first reply", user: "Dean" }
+          ]
+        },
         {
           commentId: 2,
           comment: "second comment",
           user: "Vincent",
-          replies: {}
+          replies: []
         }
       ],
       inputValue: "",
-      currentUser: "Dean"
+      currentUser: "Matt",
+      role: "loginUser"
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -29,6 +35,7 @@ class App extends Component {
 
   componentDidMount() {
     // popup alert to select user
+    this.loadComments();
   }
 
   handleChange(e) {
@@ -85,7 +92,10 @@ class App extends Component {
             Submit
           </button>
         </span>
-        <CommentGroup comments={this.state.comments} />
+        <CommentGroup
+          comments={this.state.comments}
+          currentUser={this.state.currentUser}
+        />
       </div>
     );
   }

@@ -9,13 +9,13 @@ let storage = [{
     commentId: 1,
     comment: "first comment",
     user: "Dean",
-    replies: {}
+    replies: []
   },
   {
     commentId: 2,
     comment: "second comment",
     user: "Vincent",
-    replies: {}
+    replies: []
   }
 ]; // TODO: replace with DB
 
@@ -31,10 +31,28 @@ app.post('/comment', (req, res) => {
   newComment['commentId'] = uuid();
   newComment['user'] = req.body.user;
   newComment['comment'] = req.body.comment;
-  newComment['replies'] = {};
+  newComment['replies'] = [];
 
   console.log('newComment', newComment);
   storage.push(newComment);
+  res.status(201).end();
+});
+
+app.post('/reply', (req, res) => {
+  const newReply = {};
+  console.log('req.body', req.body);
+  newReply['replyId'] = uuid();
+  newReply['user'] = req.body.user;
+  newReply['reply'] = req.body.reply;
+
+  storage.forEach((commentStorage) => {
+    if (JSON.stringify(commentStorage.commentId) === req.body.commentId) {
+      console.log('Matched storage')
+      commentStorage.replies.push(newReply);
+    }
+  });
+  // console.log('storage', storage)
+  // console.log('storage pushed element', storage[1]['replies'])
   res.status(201).end();
 });
 
