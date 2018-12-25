@@ -1,3 +1,3 @@
-import Comment from './components/comment.jsx';
+import App from './components/App.jsx';
 
-window.Comment = Comment;
+window.App = App;
