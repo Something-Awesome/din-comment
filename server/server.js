@@ -3,18 +3,27 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
 const uuid = require('uuid');
+const moment = require('moment');
 
 
 let storage = [{
     commentId: 1,
     comment: "first comment",
     user: "Dean",
-    replies: []
+    createdAt: "2016-12-25",
+    replies: [{
+      commentId: 1,
+      replyId: 1,
+      reply: "first reply",
+      user: "Dean",
+      createdAt: "2018-12-23"
+    }]
   },
   {
     commentId: 2,
     comment: "second comment",
     user: "Vincent",
+    createdAt: "2018-12-25",
     replies: []
   }
 ]; // TODO: replace with DB
@@ -31,6 +40,7 @@ app.post('/comment', (req, res) => {
   newComment['commentId'] = uuid();
   newComment['user'] = req.body.user;
   newComment['comment'] = req.body.comment;
+  newComment['createdAt'] = moment();
   newComment['replies'] = [];
 
   console.log('newComment', newComment);
@@ -44,9 +54,11 @@ app.post('/reply', (req, res) => {
   newReply['replyId'] = uuid();
   newReply['user'] = req.body.user;
   newReply['reply'] = req.body.reply;
+  newReply['createdAt'] = moment();
 
   storage.forEach((commentStorage) => {
-    if (JSON.stringify(commentStorage.commentId) === req.body.commentId) {
+    if (JSON.stringify(commentStorage.commentId) === req.body.commentId ||
+      commentStorage.commentId === req.body.commentId) {
       console.log('Matched storage')
       commentStorage.replies.push(newReply);
     }

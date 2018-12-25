@@ -14,14 +14,16 @@ class App extends Component {
           commentId: 1,
           comment: "first comment",
           user: "Dean",
+          createdAt: "2018-11-25",
           replies: [
-            { commentId: 1, replyId: 1, reply: "first reply", user: "Dean" }
+            { commentId: 1, replyId: 1, reply: "first reply", user: "Dean",createdAt: "2018-12-23" }
           ]
         },
         {
           commentId: 2,
           comment: "second comment",
           user: "Vincent",
+          createdAt: "2018-12-25",
           replies: []
         }
       ],

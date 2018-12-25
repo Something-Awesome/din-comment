@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Reply from "./reply.jsx";
 import $ from "jquery";
+import moment from "moment";
 // this.state = {
 //   comments: [
 //     { commentId: 1, comment: "first comment", user: "Dean", replies: {} }
@@ -82,13 +83,18 @@ class Comment extends Component {
           user={reply.user}
           replyId={index} // update to uuid?
           currentUser={this.props.currentUser}
+          createdAt={moment(reply.createdAt).fromNow()}
         />
       );
     });
 
+    console.log("this.props.clickedCommentId", this.props.clickedCommentId);
+    console.log("comments.commentId", comments.commentId);
+
     if (
-      this.props.replied === true &&
-      JSON.stringify(comments.commentId) === this.props.clickedCommentId
+      (this.props.replied === true &&
+        JSON.stringify(comments.commentId) === this.props.clickedCommentId) ||
+      this.props.clickedCommentId === comments.commentId
     ) {
       showReplyBox = (
         <div>
@@ -106,14 +112,12 @@ class Comment extends Component {
 
     return (
       <div className={`comment-${comments.commentId}`}>
+        {console.log("comments.commentId", comments.commentId)}
+        {console.log("comments.createdAt", comments.createdAt)}
         <div>{comments.comment}</div>
         <div>{comments.user}</div>
-        <button
-          onClick={this.props.handleReply}
-          id={this.props.clickedCommentId}
-        >
-          Reply
-        </button>
+        <div>{moment(comments.createdAt).fromNow()}</div>
+        <button onClick={this.props.handleReply}>Reply</button>
         {showReplyBox}
         {replies}
       </div>
