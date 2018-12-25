@@ -20,10 +20,15 @@ class App extends Component {
           replies: {}
         }
       ],
-      inputValue: ""
+      inputValue: "",
+      currentUser: "Dean"
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    // popup alert to select user
   }
 
   handleChange(e) {
@@ -37,10 +42,11 @@ class App extends Component {
     $.ajax({
       method: "POST",
       url: "/comment",
-      data: { comment: this.state.inputValue },
+      data: { comment: this.state.inputValue, user: this.state.currentUser },
       success: data => {
         console.log("AJAX success", data);
         this.loadComments();
+        event.preventDefault();
       },
       error: err => {
         console.log("AJAX failed", err);
@@ -66,15 +72,21 @@ class App extends Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <textarea
-          className="inputCommentBox"
-          value={this.state.inputValue}
-          onChange={this.handleChange}
-        />
-        <input type="submit" value="submit" />
+      <div>
+        <form className="wrapper">
+          <textarea
+            className="inputCommentBox"
+            value={this.state.inputValue}
+            onChange={this.handleChange}
+          />
+        </form>
+        <span>
+          <button onClick={this.handleSubmit} className="submitButton">
+            Submit
+          </button>
+        </span>
         <CommentGroup comments={this.state.comments} />
-      </form>
+      </div>
     );
   }
 }

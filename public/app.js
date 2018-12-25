@@ -578,7 +578,8 @@ var App = function (_Component) {
         user: "Vincent",
         replies: {}
       }],
-      inputValue: ""
+      inputValue: "",
+      currentUser: "Dean"
     };
     _this.handleChange = _this.handleChange.bind(_this);
     _this.handleSubmit = _this.handleSubmit.bind(_this);
@@ -586,6 +587,11 @@ var App = function (_Component) {
   }
 
   _createClass(App, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      // popup alert to select user
+    }
+  }, {
     key: "handleChange",
     value: function handleChange(e) {
       this.setState({
@@ -601,10 +607,11 @@ var App = function (_Component) {
       _jquery2.default.ajax({
         method: "POST",
         url: "/comment",
-        data: { comment: this.state.inputValue },
+        data: { comment: this.state.inputValue, user: this.state.currentUser },
         success: function success(data) {
           console.log("AJAX success", data);
           _this2.loadComments();
+          event.preventDefault();
         },
         error: function error(err) {
           console.log("AJAX failed", err);
@@ -634,14 +641,26 @@ var App = function (_Component) {
     key: "render",
     value: function render() {
       return _react2.default.createElement(
-        "form",
-        { onSubmit: this.handleSubmit },
-        _react2.default.createElement("textarea", {
-          className: "inputCommentBox",
-          value: this.state.inputValue,
-          onChange: this.handleChange
-        }),
-        _react2.default.createElement("input", { type: "submit", value: "submit" }),
+        "div",
+        null,
+        _react2.default.createElement(
+          "form",
+          { className: "wrapper" },
+          _react2.default.createElement("textarea", {
+            className: "inputCommentBox",
+            value: this.state.inputValue,
+            onChange: this.handleChange
+          })
+        ),
+        _react2.default.createElement(
+          "span",
+          null,
+          _react2.default.createElement(
+            "button",
+            { onClick: this.handleSubmit, className: "submitButton" },
+            "Submit"
+          )
+        ),
         _react2.default.createElement(_commentGroup2.default, { comments: this.state.comments })
       );
     }
@@ -24279,9 +24298,12 @@ var Comment = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Comment.__proto__ || Object.getPrototypeOf(Comment)).call(this, props));
 
     _this.state = {
-      replied: false
+      replied: false,
+      replyMessage: ""
     };
     _this.handleReply = _this.handleReply.bind(_this);
+    _this.handleReplyChange = _this.handleReplyChange.bind(_this);
+    _this.handleReplySubmit = _this.handleReplySubmit.bind(_this);
     return _this;
   }
 
@@ -24291,6 +24313,24 @@ var Comment = function (_Component) {
       event.preventDefault();
       this.setState({
         replied: true
+      });
+    }
+  }, {
+    key: "handleReplyChange",
+    value: function handleReplyChange(e) {
+      this.setState({
+        replyMessage: e.target.value
+      });
+    }
+  }, {
+    key: "handleReplySubmit",
+    value: function handleReplySubmit(e) {
+      //ajax to db
+      event.preventDefault();
+      console.log(this.props);
+      console.log("submitted reply for comment " + this.props.comment.commentId);
+      this.setState({
+        replied: false
       });
     }
   }, {
@@ -24304,12 +24344,18 @@ var Comment = function (_Component) {
           "div",
           null,
           _react2.default.createElement("textarea", {
-            className: "inputCommentBox",
+            className: "replyBox",
             value: this.state.inputValue,
-            onChange: this.handleChange
+            onChange: this.handleReplyChange
           }),
-          _react2.default.createElement("input", { type: "submit", value: "submit" })
+          _react2.default.createElement(
+            "button",
+            { onClick: this.handleReplySubmit },
+            "Submit"
+          )
         );
+      } else {
+        showReplyBox = null;
       }
 
       return _react2.default.createElement(

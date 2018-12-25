@@ -9,15 +9,34 @@ class Comment extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      replied: false
+      replied: false,
+      replyMessage: ""
     };
     this.handleReply = this.handleReply.bind(this);
+    this.handleReplyChange = this.handleReplyChange.bind(this);
+    this.handleReplySubmit = this.handleReplySubmit.bind(this);
   }
 
   handleReply() {
     event.preventDefault();
     this.setState({
       replied: true
+    });
+  }
+
+  handleReplyChange(e) {
+    this.setState({
+      replyMessage: e.target.value
+    });
+  }
+
+  handleReplySubmit(e) {
+    //ajax to db
+    event.preventDefault();
+    console.log(this.props);
+    console.log(`submitted reply for comment ${this.props.comment.commentId}`);
+    this.setState({
+      replied: false
     });
   }
 
@@ -29,13 +48,15 @@ class Comment extends Component {
       showReplyBox = (
         <div>
           <textarea
-            className="inputCommentBox"
+            className="replyBox"
             value={this.state.inputValue}
-            onChange={this.handleChange}
+            onChange={this.handleReplyChange}
           />
-          <input type="submit" value="submit" />
+          <button onClick={this.handleReplySubmit}>Submit</button>
         </div>
       );
+    } else {
+      showReplyBox = null;
     }
 
     return (

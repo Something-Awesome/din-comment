@@ -5,13 +5,14 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
 <style>
   h1 {
-    color: lightblue
+    color: darkblue
   }
 
   .wrapper {
     display: grid;
     grid-template-columns: 70%;
     grid-gap: 1em;
+    margin-left: 20px
   }
 
   .wrapper>div {
@@ -23,10 +24,6 @@
     background: yellow
   }
 
-  .replyBox {
-    background: lightgreen
-  }
-
   .inputCommentBox {
     width: 500px;
     height: 200px;
@@ -34,12 +31,18 @@
     border-style: ridge;
   }
 
-  #submitButton {
-    width: 100px;
-    height: 20px;
-    position: relative;
-    float: right;
-    margin: 0 0 2% 0;
+  .replyBox {
+    width: 500px;
+    height: 100px;
+    border-color: darkgray;
+    border-style: ridge;
+    margin: 5px;
+  }
+
+  .submitButton {
+    /* position: relative;
+    float: right; */
+    margin: 10px;
   }
 </style>
 
