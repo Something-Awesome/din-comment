@@ -3,7 +3,9 @@ import ReactDOM from "react-dom";
 import CommentGroup from "./commentGroup.jsx";
 import $ from "jquery";
 
-// {comments: 'first comment', user:'Dean', replies:{{comments: 'first reply', user:'Vincent', replies:{}}}}
+//TODO: clean up input text box after submit
+//TODO: refactor cc to sfc
+//TODO: add in css
 
 class App extends Component {
   constructor(props) {
@@ -16,7 +18,13 @@ class App extends Component {
           user: "Dean",
           createdAt: "2018-11-25",
           replies: [
-            { commentId: 1, replyId: 1, reply: "first reply", user: "Dean",createdAt: "2018-12-23" }
+            {
+              commentId: 1,
+              replyId: 1,
+              reply: "first reply",
+              user: "Dean",
+              createdAt: "2018-12-23"
+            }
           ]
         },
         {

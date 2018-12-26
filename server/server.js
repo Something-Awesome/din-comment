@@ -5,29 +5,6 @@ const port = 3000;
 const uuid = require('uuid');
 const moment = require('moment');
 const db = require('../db/db');
-const JSON = require('circular-json');
-
-let storage = [{
-    commentId: 1,
-    comment: "first comment",
-    user: "Dean",
-    createdAt: "2016-12-25",
-    replies: [{
-      commentId: 1,
-      replyId: 1,
-      reply: "first reply",
-      user: "Dean",
-      createdAt: "2018-12-23"
-    }]
-  },
-  {
-    commentId: 2,
-    comment: "second comment",
-    user: "Vincent",
-    createdAt: "2018-12-25",
-    replies: []
-  }
-]; // TODO: replace with DB
 
 app.use(bodyParser.urlencoded({
   extended: false
@@ -53,15 +30,6 @@ app.post('/comment', (req, res) => {
   res.status(201).end();
 });
 
-// commentId: String,
-// replyId: String,
-// reply: String,
-// user: String,
-// createdAt: {
-//   type: Date,
-//   default: Date.now
-// }
-
 app.post('/reply', (req, res) => {
   // TODO: check if comment / reply is empty
   const newReply = {};
@@ -69,7 +37,6 @@ app.post('/reply', (req, res) => {
   newReply['user'] = req.body.user;
   newReply['reply'] = req.body.reply;
   newReply['createdAt'] = moment();
-  //{ array: { $push: { property: {$each: ['value'], $position: 0 } } } },
   db.CommentModel.findOneAndUpdate({
       commentId: req.body.commentId
     }, {
@@ -86,17 +53,10 @@ app.post('/reply', (req, res) => {
         res.status(404).end();
       }
       console.log('replyObj >>', (data));
-      // const replyToComment = data[0]['replies'];
-      // // replyToComment.push(newReply);
-      // console.log('replyToComment >>', replyToComment);
       res.status(201).end();
     })
 });
 
-
-
-
-// Room.find({}).sort('-date').exec(function(err, docs) { ... });
 app.get('/comment', (req, res) => {
   db.CommentModel.find({}).sort({
     'createdAt': 'desc'
@@ -105,7 +65,6 @@ app.get('/comment', (req, res) => {
       console.log(err);
       res.status(404).end();
     }
-    // console.log(data)
     res.send(data);
   })
 });
@@ -114,20 +73,3 @@ app.listen(port, () => {
   console.log(`listening at port ${port}`);
 });
 
-
-// app.post('/reply', (req, res) => {
-//   // TODO: check if comment / reply is empty
-//   const newReply = {};
-//   newReply['replyId'] = uuid();
-//   newReply['user'] = req.body.user;
-//   newReply['reply'] = req.body.reply;
-//   newReply['createdAt'] = moment();
-//   storage.forEach((commentStorage) => {
-//     if (JSON.stringify(commentStorage.commentId) === req.body.commentId ||
-//       commentStorage.commentId === req.body.commentId) {
-//       // console.log('Matched storage')
-//       commentStorage.replies.push(newReply);
-//     }
-//   });
-//   res.status(201).end();
-// });

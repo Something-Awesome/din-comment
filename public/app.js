@@ -10929,7 +10929,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// {comments: 'first comment', user:'Dean', replies:{{comments: 'first reply', user:'Vincent', replies:{}}}}
+//TODO: clean up input text box after submit
+//TODO: refactor cc to sfc
+//TODO: add in css
 
 var App = function (_Component) {
   _inherits(App, _Component);
@@ -10945,7 +10947,13 @@ var App = function (_Component) {
         comment: "first comment",
         user: "Dean",
         createdAt: "2018-11-25",
-        replies: [{ commentId: 1, replyId: 1, reply: "first reply", user: "Dean", createdAt: "2018-12-23" }]
+        replies: [{
+          commentId: 1,
+          replyId: 1,
+          reply: "first reply",
+          user: "Dean",
+          createdAt: "2018-12-23"
+        }]
       }, {
         commentId: 2,
         comment: "second comment",
@@ -34683,14 +34691,7 @@ var _comment2 = _interopRequireDefault(_comment);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// this.state = {
-//   comments: [
-//     { commentId: 1, comment: "first comment", user: "Dean", replies: {} }
-//   ],
-
 var CommentGroup = function CommentGroup(props) {
-  // const comments = props.comments;
-  // const currentUser = props.currentUser;
   console.log("props in comment group", props);
   var formatComments = props.comments.map(function (element, index) {
     return _react2.default.createElement(
@@ -34708,8 +34709,6 @@ var CommentGroup = function CommentGroup(props) {
       })
     );
   });
-  // console.log(formatComments);
-  // console.log(comment);
   return _react2.default.createElement(
     "ul",
     { className: "list-group" },
@@ -34730,8 +34729,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
@@ -34740,171 +34737,76 @@ var _reply = __webpack_require__(22);
 
 var _reply2 = _interopRequireDefault(_reply);
 
-var _jquery = __webpack_require__(6);
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 var _moment = __webpack_require__(23);
 
 var _moment2 = _interopRequireDefault(_moment);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var Comment = function Comment(props) {
+  var comments = props.comment;
+  var showReplyBox = void 0;
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+  var replies = props.comment.replies.map(function (reply, index) {
+    console.log("reply>>>", reply);
+    // todo: replace index with replyID
+    return _react2.default.createElement(_reply2.default, {
+      key: index,
+      commentId: reply.commentId,
+      reply: reply.reply,
+      user: reply.user,
+      replyId: index // update to uuid?
+      , currentUser: props.currentUser,
+      createdAt: (0, _moment2.default)(reply.createdAt).fromNow()
+    });
+  });
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-// this.state = {
-//   comments: [
-//     { commentId: 1, comment: "first comment", user: "Dean", replies: {} }
-//   ],
-
-// when click submit => create a new comment object => ajax request
-// when click reply => look up commentId
-
-var Comment = function (_Component) {
-  _inherits(Comment, _Component);
-
-  function Comment(props) {
-    _classCallCheck(this, Comment);
-
-    // this.state = {
-    //   replied: false,
-    //   replyMessage: "",
-    //   clickedCommentId: ""
-    // };
-    var _this = _possibleConstructorReturn(this, (Comment.__proto__ || Object.getPrototypeOf(Comment)).call(this, props));
-
-    console.log("props in comments", _this.props);
-    // this.handleReply = this.handleReply.bind(this);
-    // this.handleReplyChange = this.handleReplyChange.bind(this);
-    // this.handleReplySubmit = this.handleReplySubmit.bind(this);
-    return _this;
+  if (props.replied === true && JSON.stringify(comments.commentId) === props.clickedCommentId || props.clickedCommentId === comments.commentId) {
+    showReplyBox = _react2.default.createElement(
+      "div",
+      null,
+      _react2.default.createElement("textarea", {
+        className: "replyBox",
+        value: props.inputValue,
+        onChange: props.handleReplyChange
+      }),
+      _react2.default.createElement(
+        "button",
+        { onClick: props.handleReplySubmit },
+        "Submit"
+      )
+    );
+  } else {
+    showReplyBox = null;
   }
 
-  // handleReply(e) {
-  //   event.preventDefault();
-  //   // This might not be needed
-  //   const clickedCommentId = e.target.parentNode.className.substring(8);
-  //   this.setState({
-  //     replied: true,
-  //     clickedCommentId: clickedCommentId
-  //   });
-  // }
-
-  // handleReplyChange(e) {
-  //   this.setState({
-  //     replyMessage: e.target.value
-  //   });
-  // }
-
-  // handleReplySubmit(e) {
-  //   // ajax to db
-  //   // get comment ID
-  //   // push to reply array
-  //   event.preventDefault();
-  //   console.log(this.props);
-  //   console.log(`submitted reply for comment ${this.props.comment.commentId}`);
-  //   event.preventDefault();
-  //   $.ajax({
-  //     method: "POST",
-  //     url: "/reply",
-  //     data: {
-  //       commentId: this.props.comment.commentId,
-  //       reply: this.state.replyMessage,
-  //       user: this.props.currentUser
-  //     },
-  //     success: data => {
-  //       console.log("AJAX REPLY success", data);
-  //       this.setState({
-  //         replied: false
-  //       });
-  //     },
-  //     error: err => {
-  //       console.log("AJAX REPLY failed", err);
-  //     }
-  //   });
-  // }
-
-  _createClass(Comment, [{
-    key: "render",
-    value: function render() {
-      var _this2 = this;
-
-      var comments = this.props.comment;
-      var showReplyBox = void 0;
-
-      var replies = this.props.comment.replies.map(function (reply, index) {
-        console.log("reply>>>", reply);
-        // todo: replace index with replyID
-        return _react2.default.createElement(_reply2.default, {
-          key: index,
-          commentId: reply.commentId,
-          reply: reply.reply,
-          user: reply.user,
-          replyId: index // update to uuid?
-          , currentUser: _this2.props.currentUser,
-          createdAt: (0, _moment2.default)(reply.createdAt).fromNow()
-        });
-      });
-
-      console.log("this.props.clickedCommentId", this.props.clickedCommentId);
-      console.log("comments.commentId", comments.commentId);
-
-      if (this.props.replied === true && JSON.stringify(comments.commentId) === this.props.clickedCommentId || this.props.clickedCommentId === comments.commentId) {
-        showReplyBox = _react2.default.createElement(
-          "div",
-          null,
-          _react2.default.createElement("textarea", {
-            className: "replyBox",
-            value: this.props.inputValue,
-            onChange: this.props.handleReplyChange
-          }),
-          _react2.default.createElement(
-            "button",
-            { onClick: this.props.handleReplySubmit },
-            "Submit"
-          )
-        );
-      } else {
-        showReplyBox = null;
-      }
-
-      return _react2.default.createElement(
-        "div",
-        { className: "comment-" + comments.commentId },
-        console.log("comments.commentId", comments.commentId),
-        console.log("comments.createdAt", comments.createdAt),
-        _react2.default.createElement(
-          "div",
-          null,
-          comments.comment
-        ),
-        _react2.default.createElement(
-          "div",
-          null,
-          comments.user
-        ),
-        _react2.default.createElement(
-          "div",
-          null,
-          (0, _moment2.default)(comments.createdAt).fromNow()
-        ),
-        _react2.default.createElement(
-          "button",
-          { onClick: this.props.handleReply },
-          "Reply"
-        ),
-        showReplyBox,
-        replies
-      );
-    }
-  }]);
-
-  return Comment;
-}(_react.Component);
+  return _react2.default.createElement(
+    "div",
+    { className: "comment-" + comments.commentId },
+    _react2.default.createElement(
+      "div",
+      null,
+      comments.comment
+    ),
+    _react2.default.createElement(
+      "div",
+      null,
+      comments.user
+    ),
+    _react2.default.createElement(
+      "div",
+      null,
+      (0, _moment2.default)(comments.createdAt).fromNow()
+    ),
+    _react2.default.createElement(
+      "button",
+      { onClick: props.handleReply },
+      "Reply"
+    ),
+    showReplyBox,
+    replies
+  );
+};
 
 exports.default = Comment;
 
@@ -34923,14 +34825,9 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _moment = __webpack_require__(23);
-
-var _moment2 = _interopRequireDefault(_moment);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Reply = function Reply(props) {
-  console.log("props in reply component, ", props);
   return _react2.default.createElement(
     "div",
     { className: "reply-" + props.replyId },
