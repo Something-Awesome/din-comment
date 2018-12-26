@@ -11,6 +11,7 @@ const seedComment = (numTimes) => {
       commentId: uuid(),
       comment: faker.lorem.sentence(),
       user: faker.internet.userName(),
+      avatar: faker.internet.avatar(),
       createdAt: faker.date.past(1),
       replies: []
     }, (err, data) => {
@@ -28,11 +29,13 @@ const seedCommentWithReplies = (numTimes) => {
       commentId: uuid(),
       comment: faker.lorem.sentence(),
       user: faker.internet.userName(),
+      avatar: faker.internet.avatar(),
       createdAt: faker.date.past(1),
       replies: [{
         replyId: uuid(),
         user: faker.internet.userName(),
-        reply: faker.lorem.text,
+        avatar: faker.internet.avatar(),
+        reply: faker.lorem.sentence(),
         createdAt: faker.date.past(1),
       }]
     }, (err, data) => {
