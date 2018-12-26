@@ -9,14 +9,17 @@ const Comment = props => {
   const replies = props.comment.replies.map((reply, index) => {
     console.log("reply>>>", reply);
     // todo: replace index with replyID
+
     return (
       <Reply
         key={index}
-        commentId={reply.commentId}
+        commentId={reply.commentId} // undefined?
         reply={reply.reply}
         user={reply.user}
         replyId={index} // update to uuid?
-        currentUser={props.currentUser}
+        avatar={
+          reply.avatar === undefined ? props.currentUserAvator : reply.avatar
+        } // undefined?
         createdAt={moment(reply.createdAt).fromNow()}
       />
     );
@@ -31,10 +34,15 @@ const Comment = props => {
       <div>
         <textarea
           className="replyBox"
-          value={props.inputValue}
+          value={props.replyMessage}
           onChange={props.handleReplyChange}
         />
-        <button onClick={props.handleReplySubmit}>Submit</button>
+        <button
+          onClick={props.handleReplySubmit}
+          className="btn btn-secondary btn-sm"
+        >
+          Submit
+        </button>
       </div>
     );
   } else {
@@ -44,9 +52,12 @@ const Comment = props => {
   return (
     <div className={`comment-${comments.commentId}`}>
       <div>{comments.comment}</div>
-      <div>{comments.user}</div>
+      <img src={comments.avatar} className="avatar" />
+      <span> {comments.user}</span>
       <div>{moment(comments.createdAt).fromNow()}</div>
-      <button onClick={props.handleReply}>Reply</button>
+      <button onClick={props.handleReply} className="btn btn-link btn-sm">
+        Reply
+      </button>
       {showReplyBox}
       {replies}
     </div>

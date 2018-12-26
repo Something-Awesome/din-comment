@@ -9,6 +9,7 @@ const CommentGroup = props => {
         <Comment
           comment={element}
           currentUser={props.currentUser}
+          currentUserAvator={props.currentUserAvator}
           handleReply={props.handleReply}
           handleReplyChange={props.handleReplyChange}
           handleReplySubmit={props.handleReplySubmit}

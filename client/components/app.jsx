@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import CommentGroup from "./commentGroup.jsx";
 import $ from "jquery";
+import "faker/locale/en_US";
 
 //TODO: clean up input text box after submit
 //TODO: add in css
 //TODO: add in different views for different roles
-//TODO: lookup user avator and display when comment/ reply is posted
+//TODO: Fix bug in avator comment + reply
 
 class App extends Component {
   constructor(props) {
@@ -38,7 +39,8 @@ class App extends Component {
       ],
 
       inputValue: "",
-      currentUser: "Matt",
+      currentUser: faker.internet.userName(),
+      currentUserAvator: faker.internet.avatar(),
       // role: "loginUser",
 
       // reply related states
@@ -88,10 +90,17 @@ class App extends Component {
     $.ajax({
       method: "POST",
       url: "/comment",
-      data: { comment: this.state.inputValue, user: this.state.currentUser },
+      data: {
+        comment: this.state.inputValue,
+        user: this.state.currentUser,
+        avatar: this.state.currentUserAvator
+      },
       success: data => {
         console.log("AJAX success", data);
         this.loadComments();
+        this.setState({
+          inputValue: ""
+        });
         event.preventDefault();
       },
       error: err => {
@@ -131,12 +140,14 @@ class App extends Component {
       data: {
         commentId: this.state.clickedCommentId,
         reply: this.state.replyMessage,
-        user: this.state.currentUser
+        user: this.state.currentUser,
+        avatar: this.state.currentUserAvator
       },
       success: data => {
         console.log("AJAX REPLY success", data);
         this.setState({
-          replied: !this.state.replied
+          replied: !this.state.replied,
+          replyMessage: ""
         });
         this.loadComments();
       },
@@ -148,8 +159,8 @@ class App extends Component {
 
   render() {
     return (
-      <div>
-        <form className="wrapper">
+      <div className="wrapper">
+        <form>
           <textarea
             className="inputCommentBox"
             value={this.state.inputValue}
@@ -157,13 +168,18 @@ class App extends Component {
           />
         </form>
         <span>
-          <button onClick={this.handleSubmit} className="submitButton">
+          <button
+            onClick={this.handleSubmit}
+            id="submitButton"
+            className="btn btn-link btn-lg"
+          >
             Submit
           </button>
         </span>
         <CommentGroup
           comments={this.state.comments}
           currentUser={this.state.currentUser}
+          currentUserAvator={this.state.currentUserAvator}
           replied={this.state.replied}
           replyMessage={this.state.replyMessage}
           clickedCommentId={this.state.clickedCommentId}
