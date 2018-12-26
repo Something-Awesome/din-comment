@@ -1,4 +1,4 @@
-# Front End Capstone
+# Front End Capstone - Comment Component
 
 > Build an easy to use web component to allow users to comment and reply to a blog post.
 The design mimics Kickstarter comment page. 
