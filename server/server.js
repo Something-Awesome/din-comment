@@ -53,25 +53,47 @@ app.post('/comment', (req, res) => {
   res.status(201).end();
 });
 
+// commentId: String,
+// replyId: String,
+// reply: String,
+// user: String,
+// createdAt: {
+//   type: Date,
+//   default: Date.now
+// }
+
 app.post('/reply', (req, res) => {
   // TODO: check if comment / reply is empty
   const newReply = {};
-  console.log('req.body', req.body);
   newReply['replyId'] = uuid();
   newReply['user'] = req.body.user;
   newReply['reply'] = req.body.reply;
   newReply['createdAt'] = moment();
-
-  storage.forEach((commentStorage) => {
-    if (JSON.stringify(commentStorage.commentId) === req.body.commentId ||
-      commentStorage.commentId === req.body.commentId) {
-      console.log('Matched storage')
-      commentStorage.replies.push(newReply);
-    }
-  });
-
-  res.status(201).end();
+  //{ array: { $push: { property: {$each: ['value'], $position: 0 } } } },
+  db.CommentModel.findOneAndUpdate({
+      commentId: req.body.commentId
+    }, {
+      $push: {
+        replies: {
+          $each: [newReply],
+          $position: 0
+        }
+      }
+    },
+    (err, data) => {
+      if (err) {
+        console.log('cant find comment')
+        res.status(404).end();
+      }
+      console.log('replyObj >>', (data));
+      // const replyToComment = data[0]['replies'];
+      // // replyToComment.push(newReply);
+      // console.log('replyToComment >>', replyToComment);
+      res.status(201).end();
+    })
 });
+
+
 
 
 // Room.find({}).sort('-date').exec(function(err, docs) { ... });
@@ -83,7 +105,7 @@ app.get('/comment', (req, res) => {
       console.log(err);
       res.status(404).end();
     }
-    console.log(data)
+    // console.log(data)
     res.send(data);
   })
 });
@@ -92,3 +114,20 @@ app.listen(port, () => {
   console.log(`listening at port ${port}`);
 });
 
+
+// app.post('/reply', (req, res) => {
+//   // TODO: check if comment / reply is empty
+//   const newReply = {};
+//   newReply['replyId'] = uuid();
+//   newReply['user'] = req.body.user;
+//   newReply['reply'] = req.body.reply;
+//   newReply['createdAt'] = moment();
+//   storage.forEach((commentStorage) => {
+//     if (JSON.stringify(commentStorage.commentId) === req.body.commentId ||
+//       commentStorage.commentId === req.body.commentId) {
+//       // console.log('Matched storage')
+//       commentStorage.replies.push(newReply);
+//     }
+//   });
+//   res.status(201).end();
+// });
