@@ -20,6 +20,7 @@
     "bootstrap": "^4.2.1",
     "circular-json": "^0.5.9",
     "express": "^4.16.2",
+    "faker": "^4.1.0",
     "font-awesome": "^4.7.0",
     "jest": "^22.3.0",
     "jquery": "^3.3.1",

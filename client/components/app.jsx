@@ -4,8 +4,9 @@ import CommentGroup from "./commentGroup.jsx";
 import $ from "jquery";
 
 //TODO: clean up input text box after submit
-//TODO: refactor cc to sfc
 //TODO: add in css
+//TODO: add in different views for different roles
+//TODO: lookup user avator and display when comment/ reply is posted
 
 class App extends Component {
   constructor(props) {
