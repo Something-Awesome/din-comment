@@ -46,5 +46,5 @@ const seedCommentWithReplies = (numTimes) => {
   }
 }
 
-seedComment(3);
-seedCommentWithReplies(3)
+seedComment(5);
+seedCommentWithReplies(5);

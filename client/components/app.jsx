@@ -4,47 +4,19 @@ import CommentGroup from "./commentGroup.jsx";
 import $ from "jquery";
 import "faker/locale/en_US";
 
-//TODO: clean up input text box after submit
-//TODO: add in css
-//TODO: add in different views for different roles
-//TODO: Fix bug in avator comment + reply
-
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      comments: [
-        {
-          commentId: 1,
-          comment: "first comment",
-          user: "Dean",
-          createdAt: "2018-11-25",
-          replies: [
-            {
-              commentId: 1,
-              replyId: 1,
-              reply: "first reply",
-              user: "Dean",
-              createdAt: "2018-12-23"
-            }
-          ]
-        },
-        {
-          commentId: 2,
-          comment: "second comment",
-          user: "Vincent",
-          createdAt: "2018-12-25",
-          replies: []
-        }
-      ],
+      comments: [],
 
       inputValue: "",
       currentUser: faker.internet.userName(),
       currentUserAvator: faker.internet.avatar(),
-      // role: "loginUser",
 
       // reply related states
-      replied: false,
+      replied: false, // use to control when to expand reply box
+      replyId: "",
       replyMessage: "",
       clickedCommentId: ""
     };
@@ -59,7 +31,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // popup alert to select user
     this.loadComments();
   }
 
@@ -111,8 +82,6 @@ class App extends Component {
 
   handleReply(e) {
     event.preventDefault();
-    // This might not be needed
-    // console.log("handleReply>>> ", this.props);
     const clickedCommentId = e.target.parentNode.className.substring(8);
     this.setState({
       replied: !this.state.replied,
@@ -127,12 +96,7 @@ class App extends Component {
   }
 
   handleReplySubmit(e) {
-    // ajax to db
-    // get comment ID
-    // push to reply array
     event.preventDefault();
-    // console.log("handleReplySubmit>>> ", this.props);
-    console.log(`submitted reply for comment ${this.state.clickedCommentId}`);
     event.preventDefault();
     $.ajax({
       method: "POST",
@@ -147,7 +111,8 @@ class App extends Component {
         console.log("AJAX REPLY success", data);
         this.setState({
           replied: !this.state.replied,
-          replyMessage: ""
+          replyMessage: "",
+          replyId: data
         });
         this.loadComments();
       },
@@ -181,6 +146,7 @@ class App extends Component {
           currentUser={this.state.currentUser}
           currentUserAvator={this.state.currentUserAvator}
           replied={this.state.replied}
+          replyId={this.state.replyId}
           replyMessage={this.state.replyMessage}
           clickedCommentId={this.state.clickedCommentId}
           handleReply={this.handleReply}

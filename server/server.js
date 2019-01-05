@@ -14,8 +14,10 @@ app.use(express.static('public'));
 
 
 app.post('/comment', (req, res) => {
-  // TODO: check if comment / reply is empty
-  console.log('comment', req.body);
+  if (req.body.comment === "") {
+    res.status(400).send('please enter comment'); // bad request
+  }
+
   db.CommentModel.create({
     commentId: uuid(),
     comment: req.body.comment,
@@ -33,8 +35,9 @@ app.post('/comment', (req, res) => {
 });
 
 app.post('/reply', (req, res) => {
-  // TODO: check if comment / reply is empty
-  console.log('reply', req.body);
+  if (req.body.reply === "") {
+    res.status(400).send('please enter reply'); // bad request
+  }
   const newReply = {};
   newReply['replyId'] = uuid();
   newReply['user'] = req.body.user;
@@ -53,16 +56,15 @@ app.post('/reply', (req, res) => {
     },
     (err, data) => {
       if (err) {
-        console.log('cant find comment')
+        console.log('cannot find comment')
         res.status(404).end();
       }
-      // console.log('replyObj >>', (data));
-      res.status(201).end();
+      res.status(201).send(newReply['replyId']);
     })
 });
 
 app.get('/comment', (req, res) => {
-  db.CommentModel.find({}).sort({
+  db.CommentModel.find({}).limit(10).sort({
     'createdAt': 'desc'
   }).exec((err, data) => {
     if (err) {
