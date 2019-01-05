@@ -4,15 +4,15 @@
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
 <style>
-  h1 {
+  /* #root {
     color: darkblue
-  }
+  } */
 
   .wrapper {
     display: grid;
     grid-template-columns: 90%;
     grid-gap: 1em;
-    margin-left: 20px;
+    margin: 20px;
   }
 
   .wrapper>div {
@@ -28,7 +28,6 @@
     height: 200px;
     border-color: darkgray;
     border-style: ridge;
-    /* margin:0 auto; */
   }
 
   .replyBox {
@@ -47,11 +46,10 @@
   }
 
   [class*="comment-"] {
-
     margin: 5px
   }
 
-    [class*="reply-"] {
+  [class*="reply-"] {
     border-color: powderblue;
     border-style: solid;
     border-width: thin;
@@ -62,8 +60,6 @@
 </style>
 
 <body>
-
-  <h1>Comments</h1>
   <div id='root'></div>
 </body>
 
@@ -78,6 +74,5 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js" type="text/javascript"></script>
 <script src="app.js"></script>
-<!-- <script src="http://localhost:3000/app.js"></script> -->
 
 </html>

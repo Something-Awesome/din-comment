@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "build": "webpack --watch",
-    "start": "nodemon ./server/server.js"
+    "start": "nodemon ./server/server.js",
+    "genSeedData": "node ./db/seedData.js"
   },
   "keywords": [],
   "author": "",

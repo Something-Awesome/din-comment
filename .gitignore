@@ -24,3 +24,5 @@ coverage
 build/
 dist/
 
+# example
+example/

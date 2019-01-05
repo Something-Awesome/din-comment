@@ -6,20 +6,16 @@ const Comment = props => {
   const comments = props.comment;
   let showReplyBox;
 
-  const replies = props.comment.replies.map((reply, index) => {
-    console.log("reply>>>", reply);
-    // todo: replace index with replyID
-
+  const replies = props.comment.replies.map(reply => {
     return (
       <Reply
-        key={index}
-        commentId={reply.commentId} // undefined?
+        key={reply.replyId}
         reply={reply.reply}
         user={reply.user}
-        replyId={index} // update to uuid?
+        replyId={reply.replyId}
         avatar={
           reply.avatar === undefined ? props.currentUserAvator : reply.avatar
-        } // undefined?
+        }
         createdAt={moment(reply.createdAt).fromNow()}
       />
     );
