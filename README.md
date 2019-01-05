@@ -15,10 +15,13 @@ The design mimics Kickstarter comment page.
 1. Description (TODO: add in description)
 
 ## Usage
+To start the app, run the following: 
 
-> To start run: 
-> npm run build // to start react 
-> npm start // to start node
+```sh
+npm start
+npm run build
+npm run genSeedData
+```
 
 ## Requirements
 - Node 6.13.0
